@@ -649,7 +649,15 @@ class MapService:
             async with async_playwright() as p:
 
                 browser = await p.chromium.launch(
-                    headless=True
+                    headless=True,
+                    args=[
+                        "--no-sandbox",
+                        "--disable-setuid-sandbox",
+                        "--disable-dev-shm-usage",  # Evita crash por falta de memoria compartida (/dev/shm)
+                        "--disable-gpu",
+                        "--no-zygote",
+                        "--single-process"  # Recomendado en contenedores con memoria limitada
+                    ]
                 )
 
                 page = await browser.new_page(

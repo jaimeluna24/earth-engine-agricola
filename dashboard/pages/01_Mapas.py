@@ -1,4 +1,5 @@
 import base64
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -7,6 +8,12 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+# Obtener la ruta raíz del proyecto (dos niveles arriba de esta página)
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.append(str(ROOT_DIR))
+
+# Ahora sí realizas tus importaciones
 from src.services.database_service import DatabaseService
 from src.services.geojson_service import GeoJsonService
 from src.services.map_service import MapService

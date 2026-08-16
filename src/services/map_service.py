@@ -1,4 +1,5 @@
 import asyncio
+import os
 from pathlib import Path
 
 import ee
@@ -647,8 +648,12 @@ class MapService:
         async def capturar():
 
             async with async_playwright() as p:
+                
+                # Detectar la ruta del ejecutable de Chromium instalado por APT
+                chromium_path = "/usr/bin/chromium" if os.path.exists("/usr/bin/chromium") else "/usr/bin/chromium-browser"
 
                 browser = await p.chromium.launch(
+                    executable_path=chromium_path if os.path.exists(chromium_path) else None,
                     headless=True,
                     args=[
                         "--no-sandbox",

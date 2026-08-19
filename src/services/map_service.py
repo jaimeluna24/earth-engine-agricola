@@ -667,10 +667,10 @@ class MapService:
 
                 page = await browser.new_page(
                     viewport={
-                        "width": 1600,
-                        "height": 900
+                        "width": 1280,
+                        "height": 720
                     },
-                    device_scale_factor=2
+                    device_scale_factor=1
                 )
 
                 await page.goto(
@@ -707,7 +707,7 @@ class MapService:
                 # ESPERAR A QUE CARGUEN LAS IMÁGENES
                 # ====================================================
 
-                await page.wait_for_timeout(10000)
+                await page.wait_for_timeout(6000)
 
                 # ====================================================
                 # CAPTURAR MAPA

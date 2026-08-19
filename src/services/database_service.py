@@ -26,6 +26,9 @@ class DatabaseService:
         lote,
         fecha_inicio,
         fecha_fin,
+        fecha_cosecha_siembra,
+        edad_meses,
+        edad_dias,
         datos
     ):
 
@@ -94,6 +97,10 @@ class DatabaseService:
                     lote,
                     fecha_inicio,
                     fecha_fin,
+                    fecha_cosecha_siembra,
+                    edad_meses,
+                    edad_dias,
+                    
                     ndvi_min,
                     ndvi_mean,
                     ndvi_max,
@@ -107,6 +114,7 @@ class DatabaseService:
                 VALUES (
                     %s, %s, %s, %s,
                     %s, %s, %s,
+                    %s, %s, %s,
                     %s,
                     %s, %s, %s, %s, %s
                 )
@@ -116,7 +124,11 @@ class DatabaseService:
                     lote,
                     fecha_inicio,
                     fecha_fin,
-                    *valores
+                    fecha_cosecha_siembra,
+                    edad_meses,
+                    edad_dias,
+                    *valores,
+                    
                 )
             )
 
@@ -183,6 +195,9 @@ class DatabaseService:
         lote,
         fecha_inicio,
         fecha_fin,
+        fecha_cosecha_siembra,
+        edad_meses,
+        edad_dias,
         datos
     ):
 
@@ -196,6 +211,10 @@ class DatabaseService:
             lote,
             fecha_inicio,
             fecha_fin,
+            
+            fecha_cosecha_siembra,
+            edad_meses,
+            edad_dias,
 
             ndwi_min,
             ndwi_mean,
@@ -216,6 +235,8 @@ class DatabaseService:
         )
         VALUES (
             %s, %s, %s, %s,
+            
+            %s, %s, %s,
 
             %s, %s, %s,
 
@@ -269,6 +290,10 @@ class DatabaseService:
             lote,
             fecha_inicio,
             fecha_fin,
+            
+            fecha_cosecha_siembra,
+            edad_meses,
+            edad_dias,
 
             datos["NDWI_min"],
             datos["NDWI_mean"],
@@ -361,6 +386,9 @@ class DatabaseService:
         lote,
         fecha_inicio,
         fecha_fin,
+        fecha_cosecha_siembra,
+        edad_meses,
+        edad_dias,
         datos
     ):
 
@@ -374,6 +402,10 @@ class DatabaseService:
             lote,
             fecha_inicio,
             fecha_fin,
+            
+            fecha_cosecha_siembra,
+            edad_meses,
+            edad_dias,
 
             ndre_min,
             ndre_mean,
@@ -389,6 +421,7 @@ class DatabaseService:
         )
         VALUES (
             %s, %s, %s, %s,
+            %s, %s, %s,
             %s, %s, %s,
             %s,
             %s, %s, %s, %s, %s
@@ -422,6 +455,10 @@ class DatabaseService:
             lote,
             fecha_inicio,
             fecha_fin,
+            
+            fecha_cosecha_siembra,
+            edad_meses,
+            edad_dias,
 
             datos["NDRE_min"],
             datos["NDRE_mean"],
@@ -709,3 +746,48 @@ class DatabaseService:
         conexion.close()
 
         return df
+    
+    @staticmethod
+    def obtener_fecha_lotes(lote, fecha_fin):
+
+        conexion = DatabaseService.conectar()
+
+        sql = """
+        SELECT
+            l.lote AS Lote, 
+            l.finca AS Finca, 
+            MAX(th.fecha) AS fecha_cosecha_siembra,
+            DATEDIFF(%s, MAX(th.fecha)) AS edad_dias,
+            ROUND((DATEDIFF(%s, MAX(th.fecha)) + 1) / 30.41, 2) AS edad_meses
+        FROM tch_historico th 
+        INNER JOIN lotes l ON th.lote_id = l.id 
+        WHERE l.lote = %s
+        GROUP BY l.lote, l.finca
+        """
+
+        df = pd.read_sql(
+            sql,
+            conexion,
+            params=(fecha_fin, fecha_fin, lote,)
+        )
+
+        conexion.close()
+
+        # Si no se encontró ningún registro para el lote
+        if df.empty:
+            return {
+                'fecha_cosecha_siembra': None,
+                'edad_dias': None,
+                'edad_meses': None
+            }
+
+        # Se toma la primera fila del DataFrame
+        fila = df.iloc[0]
+
+        # Se convierte cada campo a un tipo nativo de Python para MySQL (evita pd.Series/Timestamp)
+        return {
+            'fecha_cosecha_siembra': str(fila['fecha_cosecha_siembra']) if pd.notnull(fila['fecha_cosecha_siembra']) else None,
+            'edad_dias': int(fila['edad_dias']) if pd.notnull(fila['edad_dias']) else None,
+            'edad_meses': float(fila['edad_meses']) if pd.notnull(fila['edad_meses']) else None
+        }
+            

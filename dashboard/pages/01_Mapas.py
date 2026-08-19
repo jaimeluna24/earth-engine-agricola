@@ -47,7 +47,10 @@ st.logo("src/assets/logo_achsa_dark.png")
 col1, col2 = st.columns([8, 2])
 
 with col1:
-    st.title("Análisis de Cultivo")
+    st.markdown("""
+        <h1 style='margin-bottom: 0px; padding-bottom: 0px;'>Análisis de Cultivo</h1>
+        <p style='color: gray; margin-top: 2px; font-size: 0.85rem;'>Gerencia de Operaciones</p>
+    """, unsafe_allow_html=True)
 
 with col2:
     st.markdown(
@@ -222,7 +225,7 @@ with col3:
 # Boton de procesar mapa
 with col4:
     st.markdown(
-        "<p style='margin:0;'>Cargar</p>",
+        "<p style='margin:0;'>Acción</p>",
         unsafe_allow_html=True
     )
     cargar = st.button(
@@ -238,7 +241,7 @@ with col5:
     )
 
     st.link_button(
-        "Ir a Looker",
+        "Etapas Fenológicas",
         "https://datastudio.google.com/u/1/reporting/984ab6b1-fdf5-41a3-9bdb-133406f54efe/page/U8g5F",
         width="content"
     )
@@ -353,7 +356,7 @@ if cargar:
                 )
             )
 
-            if porcentaje_nubes > 1 and porcentaje_nubes < 10:
+            if porcentaje_nubes > 9:
 
                 st.warning(
                     f"La finca presenta "
@@ -373,7 +376,6 @@ if cargar:
                 fecha_fin_str,
                 geojson
             )
-
 
             resultados = NDVIService.calcular_y_guardar(
                 imagen,
@@ -400,7 +402,7 @@ if cargar:
                 )
             )
 
-            if porcentaje_nubes > 10:
+            if porcentaje_nubes > 9:
             
                 st.warning(
                     f"La finca presenta "
@@ -408,7 +410,7 @@ if cargar:
                     f"Se recomienda buscar con la fecha {fecha_estimada}"
                 )
                             
-            if porcentaje_nubes > 1 and porcentaje_nubes < 10:
+            if porcentaje_nubes < 10:
                         
                 st.warning(
                     f"La finca presenta "
@@ -446,20 +448,20 @@ if cargar:
                 )
             )
 
-            if porcentaje_nubes > 10:
+            if porcentaje_nubes > 9:
  
-                 st.warning(
-                     f"La finca presenta "
-                     f"{porcentaje_nubes}% de cobertura nubosa. "
-                     f"Se recomienda buscar con la fecha {fecha_estimada}"
-                 )
+                st.warning(
+                    f"La finca presenta "
+                    f"{porcentaje_nubes}% de cobertura nubosa. "
+                    f"Se recomienda buscar con la fecha {fecha_estimada}"
+                )
                  
-            if porcentaje_nubes > 1 and porcentaje_nubes < 10:
+            if porcentaje_nubes < 10:
              
-                 st.warning(
-                     f"La finca presenta "
-                     f"{porcentaje_nubes}% de cobertura nubosa. "
-                 )           
+                st.warning(
+                    f"La finca presenta "
+                    f"{porcentaje_nubes}% de cobertura nubosa. "
+                )           
                 
 
             imagen = SentinelService.obtener(

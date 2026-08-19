@@ -1,10 +1,5 @@
-from src.services.estadisticas_indices_service import (
-    EstadisticasIndicesService
-)
-
-from src.services.database_service import (
-    DatabaseService
-)
+from src.services.database_service import DatabaseService
+from src.services.estadisticas_indices_service import EstadisticasIndicesService
 
 
 class NDVIService:
@@ -54,12 +49,17 @@ class NDVIService:
                 or datos["NDVI_max"] is None
             ):
                 continue
-
+            
+            edades = DatabaseService.obtener_fecha_lotes(datos['lote'], fecha_fin)
+            
             DatabaseService.guardar_ndvi(
                 datos["finca"],
                 datos["lote"],
                 fecha_inicio,
                 fecha_fin,
+                edades['fecha_cosecha_siembra'],
+                edades['edad_meses'],
+                edades['edad_dias'],
                 datos
             )
 

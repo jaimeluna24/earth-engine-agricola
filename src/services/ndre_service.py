@@ -61,12 +61,16 @@ class NDREService:
                     f"max={datos['NDRE_max']}"
                 )
                 continue
+            edades = DatabaseService.obtener_fecha_lotes(datos['lote'], fecha_fin)
 
             DatabaseService.guardar_ndre(
                 datos["finca"],
                 datos["lote"],
                 fecha_inicio,
                 fecha_fin,
+                edades['fecha_cosecha_siembra'],
+                edades['edad_meses'],
+                edades['edad_dias'],
                 datos
             )
 

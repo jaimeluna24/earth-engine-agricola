@@ -29,6 +29,7 @@ class DatabaseService:
         fecha_cosecha_siembra,
         edad_meses,
         edad_dias,
+        etapa_id,
         datos
     ):
 
@@ -97,9 +98,11 @@ class DatabaseService:
                     lote,
                     fecha_inicio,
                     fecha_fin,
+                    
                     fecha_cosecha_siembra,
                     edad_meses,
                     edad_dias,
+                    etapa_id,
                     
                     ndvi_min,
                     ndvi_mean,
@@ -113,7 +116,7 @@ class DatabaseService:
                 )
                 VALUES (
                     %s, %s, %s, %s,
-                    %s, %s, %s,
+                    %s, %s, %s, %s,
                     %s, %s, %s,
                     %s,
                     %s, %s, %s, %s, %s
@@ -127,6 +130,7 @@ class DatabaseService:
                     fecha_cosecha_siembra,
                     edad_meses,
                     edad_dias,
+                    etapa_id,
                     *valores,
                     
                 )
@@ -198,6 +202,7 @@ class DatabaseService:
         fecha_cosecha_siembra,
         edad_meses,
         edad_dias,
+        etapa_id,
         datos
     ):
 
@@ -215,6 +220,7 @@ class DatabaseService:
             fecha_cosecha_siembra,
             edad_meses,
             edad_dias,
+            etapa_id,
 
             ndwi_min,
             ndwi_mean,
@@ -236,7 +242,7 @@ class DatabaseService:
         VALUES (
             %s, %s, %s, %s,
             
-            %s, %s, %s,
+            %s, %s, %s, %s,
 
             %s, %s, %s,
 
@@ -294,6 +300,7 @@ class DatabaseService:
             fecha_cosecha_siembra,
             edad_meses,
             edad_dias,
+            etapa_id,
 
             datos["NDWI_min"],
             datos["NDWI_mean"],
@@ -389,6 +396,7 @@ class DatabaseService:
         fecha_cosecha_siembra,
         edad_meses,
         edad_dias,
+        etapa_id,
         datos
     ):
 
@@ -406,6 +414,7 @@ class DatabaseService:
             fecha_cosecha_siembra,
             edad_meses,
             edad_dias,
+            etapa_id,
 
             ndre_min,
             ndre_mean,
@@ -421,7 +430,7 @@ class DatabaseService:
         )
         VALUES (
             %s, %s, %s, %s,
-            %s, %s, %s,
+            %s, %s, %s, %s,
             %s, %s, %s,
             %s,
             %s, %s, %s, %s, %s
@@ -459,6 +468,7 @@ class DatabaseService:
             fecha_cosecha_siembra,
             edad_meses,
             edad_dias,
+            etapa_id,
 
             datos["NDRE_min"],
             datos["NDRE_mean"],
@@ -791,3 +801,37 @@ class DatabaseService:
             'edad_meses': float(fila['edad_meses']) if pd.notnull(fila['edad_meses']) else None
         }
             
+    @staticmethod
+    def obtener_etapa_fenologica(edad):
+
+        conexion = DatabaseService.conectar()
+
+        sql = """
+        SELECT id as etapa_id
+            FROM db_mapas.etapa_fenologica
+            WHERE %s BETWEEN inicio_dias AND fin_dias 
+            LIMIT 1;
+        """
+
+        df = pd.read_sql(
+            sql,
+            conexion,
+            params=(edad,)
+        )
+
+        conexion.close()
+
+        # Si no se encontró ningún registro 
+        if df.empty:
+            return {
+                'etapa_id': None
+            }
+
+        # Se toma la primera fila del DataFrame
+        fila = df.iloc[0]
+
+        # Se convierte cada campo a un tipo nativo de Python para MySQL (evita pd.Series/Timestamp)
+        return {
+            'etapa_id': int(fila['etapa_id']) if pd.notnull(fila['etapa_id']) else None
+        }
+        

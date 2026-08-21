@@ -51,6 +51,7 @@ class NDVIService:
                 continue
             
             edades = DatabaseService.obtener_fecha_lotes(datos['lote'], fecha_fin)
+            etapa = DatabaseService.obtener_etapa_fenologica(edades['edad_dias'])
             
             DatabaseService.guardar_ndvi(
                 datos["finca"],
@@ -60,6 +61,7 @@ class NDVIService:
                 edades['fecha_cosecha_siembra'],
                 edades['edad_meses'],
                 edades['edad_dias'],
+                etapa['etapa_id'],
                 datos
             )
 

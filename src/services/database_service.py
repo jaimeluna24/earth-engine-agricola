@@ -808,7 +808,7 @@ class DatabaseService:
 
         sql = """
         SELECT id as etapa_id
-            FROM db_mapas.etapa_fenologica
+            FROM etapa_fenologica
             WHERE %s BETWEEN inicio_dias AND fin_dias 
             LIMIT 1;
         """

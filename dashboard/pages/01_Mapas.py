@@ -6,8 +6,6 @@ from zoneinfo import ZoneInfo
 
 import streamlit as st
 
-from src.services.ee_service import EEService
-
 # ============================================================
 # RUTA RAÍZ DEL PROYECTO
 # ============================================================
@@ -26,11 +24,11 @@ if str(ROOT_DIR) not in sys.path:
         str(ROOT_DIR)
     )
 
-
 from dashboard.components.ndre_component import mostrar_ndre
 from dashboard.components.ndvi_component import mostrar_ndvi
 from dashboard.components.ndwi_component import mostrar_ndwi
 from src.services.database_service import DatabaseService
+from src.services.ee_service import EEService
 from src.services.geojson_service import GeoJsonService
 from src.services.map_service import MapService
 from src.services.ndre_service import NDREService
